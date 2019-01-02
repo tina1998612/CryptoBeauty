@@ -1,0 +1,28 @@
+{
+  "name": "cryptobeauty",
+  "version": "1.0.0",
+  "description": "",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tina1998612/CryptoBeauty.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tina1998612/CryptoBeauty/issues"
+  },
+  "homepage": "https://github.com/tina1998612/CryptoBeauty#readme",
+  "dependencies": {
+    "bignumber.js": "^8.0.1",
+    "chai": "^4.2.0",
+    "chai-bignumber": "^3.0.0",
+    "openzeppelin-solidity": "^2.0.0"
+  }
+}
