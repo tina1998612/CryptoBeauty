@@ -7,7 +7,7 @@ const Randomness = artifacts.require('./Randomness.sol');
 
 contract('CryptoBeauty', accounts => {
   const drawCardPrice = 10;
-  const [cryptoBeautyOwner, randomnessOwner, player1, player2, anyone] = accounts;
+  const [cryptoBeautyOwner, ownerWalletAddr, player1, player2, anyone] = accounts;
   const modelIds = [0, 1, 2, 3, 4, 5, 6];
   const photographerIds = [0, 1, 2, 3, 4, 5, 6];
   const poolId = 0;
@@ -19,7 +19,7 @@ contract('CryptoBeauty', accounts => {
   it('contract is deployed with correct owner', async () => {
 
     cryptoBeauty = await CryptoBeauty.new(
-      drawCardPrice, {
+      drawCardPrice, ownerWalletAddr, {
         from: cryptoBeautyOwner
       });
     assert(cryptoBeautyOwner == (await cryptoBeauty.owner.call()));
@@ -50,6 +50,20 @@ contract('CryptoBeauty', accounts => {
 
   });
 
+  it('owner can add multiple new photos', async () => {
+
+    var _photoId = (await cryptoBeauty.getLatestPhotoId.call()).toNumber();
+    assert(_photoId == 1);
+
+    receipt = await cryptoBeauty.addPhotos(modelIds, photographerIds, {
+      from: cryptoBeautyOwner
+    });
+
+    _photoId = (await cryptoBeauty.getLatestPhotoId.call()).toNumber();
+    assert(_photoId == 8);
+
+  });
+
   it('owner can add new photo pool', async () => {
 
     var _photoPoolId = (await cryptoBeauty.getLatestPhotoPoolId.call()).toNumber();
@@ -68,7 +82,7 @@ contract('CryptoBeauty', accounts => {
     // cannot add invalid photo id to pool
     await shouldFail.reverting(
       cryptoBeauty.addPhotoPool(
-        [0, 1]
+        [0, 9]
       )
     );
 
@@ -139,6 +153,11 @@ contract('CryptoBeauty', accounts => {
       from: anyone
     });
     assert(card.holder == player2);
+  });
+
+  it('contract owner can withdraw to owner wallet', async () => {
+    await cryptoBeauty.withdraw(1);
+
   });
 
 });

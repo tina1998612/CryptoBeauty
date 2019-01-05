@@ -1,4 +1,7 @@
-pragma solidity ^0.5.0;
+/*
+ *
+*/
+pragma solidity ^0.4.23;
 
 import { SafeMath } from "./openzeppelin-solidity/contracts/math/SafeMath.sol";
 import { Ownable } from "./openzeppelin-solidity/contracts/ownership/Ownable.sol";
@@ -22,15 +25,16 @@ contract CryptoBeauty is Ownable {
     uint256 photographerId;
   }
 
-  Randomness public randomnessContract;
+  Randomness randomnessContract;
 
   PhotoPool[] photoPools;
   Card[] public cards;
   Photo[] public photos;
 
-  mapping (address => uint256) public playerLastDrawTime;
+  mapping (address => uint256) public playerLastFreeDrawTime;
+  address public ownerWalletAddr;
 
-  uint256 drawCardPrice;
+  uint256 public drawCardPrice;
 
   /* events */
 
@@ -44,22 +48,35 @@ contract CryptoBeauty is Ownable {
     uint256 indexed photographerId
   );
 
+  event CardDrawn(
+    uint256 indexed cardId,
+    uint256 indexed photoId,
+    uint256 rarityScore,
+    address indexed to
+  );
+
   event Transfer(
     uint256 indexed cardId,
     address indexed from,
     address indexed to
   );
 
-  constructor(uint256 _drawCardPrice) public {
+  constructor(uint256 _drawCardPrice, address _ownerWalletAddr) public {
     randomnessContract = new Randomness();
     drawCardPrice = _drawCardPrice;
+    ownerWalletAddr = _ownerWalletAddr;
   }
 
   // ------------ external functions -------------------
 
   /* manager methods */
 
-  function addPhoto(uint256 _modelId, uint256 _photographerId) external onlyOwner {
+  function withdraw(uint256 amount) external onlyOwner {
+    require(address(this).balance >= amount);
+    ownerWalletAddr.transfer(amount);
+  }
+
+  function addPhoto(uint256 _modelId, uint256 _photographerId) public onlyOwner {
     Photo memory _photo = Photo({
       modelId: _modelId,
       photographerId: _photographerId
@@ -74,7 +91,15 @@ contract CryptoBeauty is Ownable {
     );
   }
 
-  function addPhotoPool(uint256[] calldata _photoIds) external onlyOwner {
+  function addPhotos(uint256[] _modelIds, uint256[] _photographerIds) external onlyOwner {
+    require(_modelIds.length == _photographerIds.length);
+
+    for (uint256 i = 0; i < _modelIds.length; i++) {
+      addPhoto(_modelIds[i], _photographerIds[i]);
+    }
+  }
+
+  function addPhotoPool(uint256[] _photoIds) external onlyOwner {
     // a pool must contain some photos
     require(_photoIds.length > 0, "_photoIds can't be empty.");
 
@@ -94,17 +119,24 @@ contract CryptoBeauty is Ownable {
     );
   }
 
-  /* user methods */
+  /* EXTERNAL user methods */
 
   function freeDrawCard(uint256 _photoPoolId) external {
-    // free draw if play has not drew before or today is first draw  
-    require(playerLastDrawTime[msg.sender] == 0 || playerLastDrawTime[msg.sender] + 1 days <= block.timestamp);
-    _drawCard(_photoPoolId);
+    // free draw if play has not drew before or today is first draw
+    require(playerLastFreeDrawTime[msg.sender] == 0 || playerLastFreeDrawTime[msg.sender].add(1 days) <= block.timestamp);
+
+    // MUST be valid photo pool ID
+    require(isValidPhotoId(_photoPoolId));
+
+    // update last draw time
+    playerLastFreeDrawTime[msg.sender] = block.timestamp;
+
+    _drawCard(_photoPoolId, block.timestamp);
   }
 
   function drawCard(uint256 _photoPoolId) external payable {
     require(msg.value == drawCardPrice, "paying incorrect amount");
-    _drawCard(_photoPoolId);
+    _drawCard(_photoPoolId, block.timestamp);
   }
 
   function drawMultipleCards(uint256 _photoPoolId, uint256 _amount) external payable {
@@ -112,22 +144,26 @@ contract CryptoBeauty is Ownable {
     require(msg.value == drawCardPrice.mul(_amount), "paying not correct amount");
 
     for (uint256 i = 0; i < _amount; i++) {
-      _drawCard(_photoPoolId);
+      _drawCard(_photoPoolId, i.mul(block.timestamp));
     }
   }
 
   // pool id can duplicate, ex. [0, 0, 1, 3]
-  function drawMultipleCardsFromMultiplePools(uint256[] calldata _photoPoolIds) external payable {
+  function drawMultipleCardsFromMultiplePools(uint256[] _photoPoolIds) external payable {
     require(_photoPoolIds.length > 0, "no _photoPoolIds provided");
+    require(_photoPoolIds.length <= 10, "number of pool ids cannot exceed 10");
     require(msg.value == drawCardPrice.mul(_photoPoolIds.length), "paying not correct amount");
 
     for (uint256 i = 0; i < _photoPoolIds.length; i++) {
-      _drawCard(_photoPoolIds[i]);
+      _drawCard(_photoPoolIds[i], i.mul(block.timestamp));
     }
   }
 
   function transfer(uint256 _cardId, address _to) external {
+    require(_to != address(0x0));
+    require(isValidCardId(_cardId));
     require(cards[_cardId].holder == msg.sender);
+
     _transferCard(_cardId, msg.sender, _to);
   }
 
@@ -149,14 +185,18 @@ contract CryptoBeauty is Ownable {
     return _photoPoolId < photoPools.length;
   }
 
+  function isValidCardId(uint256 _cardId) public view returns (bool) {
+    return _cardId < cards.length;
+  }
+
   // ---------------- internal functions -----------------
 
-  function _drawCard(uint256 _photoPoolId) internal {
+  function _drawCard(uint256 _photoPoolId, uint256 _salt) internal {
     // draw random photoId
-    uint256 _photoId = _drawPhotoId(_photoPoolId);
+    uint256 _photoId = _drawPhotoId(_photoPoolId, _salt);
 
     // draw random rarity
-    uint256 _rarityScore = _drawRarityScore();
+    uint256 _rarityScore = _drawRarityScore(_salt);
 
     // create card
     Card memory _card = Card({
@@ -167,8 +207,12 @@ contract CryptoBeauty is Ownable {
     uint256 _cardId = cards.length;
     cards.push(_card);
 
-    // update last draw time
-    playerLastDrawTime[msg.sender] = block.timestamp;
+    emit CardDrawn(
+      _cardId,
+      _photoId,
+      _rarityScore,
+      msg.sender  // to
+    );
 
     emit Transfer(
       _cardId,    // cardId
@@ -177,24 +221,19 @@ contract CryptoBeauty is Ownable {
     );
   }
 
-  function _drawPhotoId(uint256 _photoPoolId) internal returns(uint256 _photoId) {
-    uint256 _rand = _random();
+  function _drawPhotoId(uint256 _photoPoolId, uint256 _salt) internal returns(uint256 _photoId) {
+    require(isValidPoolId(_photoPoolId));  // if _photoPoolId is valid, draw from pool
 
-    // if _photoPoolId is valid, draw from pool
-    if (isValidPoolId(_photoPoolId)) {
-      uint256[] storage _photoIds = photoPools[_photoPoolId].photoIds;
-      require(_photoIds.length > 0, "There are no photos in pool");
-      return _photoIds[ _rand % _photoIds.length ];
-    }
-    // if _photoPoolId is not valid, draw from all photos
-    else {
-      require(photos.length > 0, "There are no photos.");
-      return _rand % photos.length;
-    }
+    uint256[] storage _photoIds = photoPools[_photoPoolId].photoIds;
+    require(_photoIds.length > 0, "There are no photos in pool");
+
+    uint256 _rand = _random(_salt);
+
+    return _photoIds[ _rand.mod(_photoIds.length) ];
   }
 
-  function _drawRarityScore() internal returns(uint256 _rarityScore) {
-    _rarityScore = _random() % 1000;
+  function _drawRarityScore(uint256 _salt) internal returns(uint256 _rarityScore) {
+    _rarityScore = _random(_salt) % 1000;
   }
 
   function _transferCard(uint256 _cardId, address _from, address _to) internal {
@@ -208,12 +247,13 @@ contract CryptoBeauty is Ownable {
   }
 
   // TODO: add more entropy
-  function _random() internal returns (uint256) {
+  function _random(uint256 _salt) internal returns (uint256) {
     return uint256(randomnessContract.rand(
       keccak256(
         abi.encodePacked(
           msg.data,
-          msg.sender
+          msg.sender,
+          _salt
         )
       )
     ));
