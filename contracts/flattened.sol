@@ -206,6 +206,15 @@ contract Randomness is Ownable {
 
 // File: contracts/CryptoBeauty.sol
 
+/*
+ * Terms:
+ * >> Salt: a number that accompany with random draw to make multiple drawing different across cards
+*/
+pragma solidity ^0.4.23;
+
+
+
+
 contract CryptoBeauty is Ownable {
   using SafeMath for uint256;
 
@@ -231,9 +240,12 @@ contract CryptoBeauty is Ownable {
   Photo[] public photos;
 
   mapping (address => uint256) public playerLastFreeDrawTime;
+  mapping (address => uint256[]) public playerDrawnCardIds;
+  mapping (address => mapping (uint256 => bool)) public playerDrawnCardIdIsHeld;
   address public ownerWalletAddr;
 
-  uint256 public drawCardPrice;
+  uint256 public drawCardPrice = 20000000;  // 20 TRX (6 accuracy)
+  uint256 public freeDrawTimeGap = 23 hours;
 
   /* events */
 
@@ -269,6 +281,16 @@ contract CryptoBeauty is Ownable {
   // ------------ external functions -------------------
 
   /* manager methods */
+
+  function setDrawCardPrice(uint256 _price) external onlyOwner {
+    require(_price != 0);
+    drawCardPrice = _price;
+  }
+
+  function setFreeDrawTimeGap(uint256 _gap) external onlyOwner {
+    require(_gap != 0);
+    freeDrawTimeGap = _gap;
+  }
 
   function withdraw(uint256 amount) external onlyOwner {
     require(address(this).balance >= amount);
@@ -318,21 +340,24 @@ contract CryptoBeauty is Ownable {
     );
   }
 
-  /* user methods */
+  /* EXTERNAL user methods */
 
   function freeDrawCard(uint256 _photoPoolId) external {
     // free draw if play has not drew before or today is first draw
-    require(playerLastFreeDrawTime[msg.sender] == 0 || playerLastFreeDrawTime[msg.sender].add(1 days) <= block.timestamp);
+    require(playerLastFreeDrawTime[msg.sender] == 0 || playerLastFreeDrawTime[msg.sender].add(freeDrawTimeGap) <= block.timestamp);
+
+    // MUST be valid photo pool ID
+    require(isValidPhotoId(_photoPoolId));
 
     // update last draw time
     playerLastFreeDrawTime[msg.sender] = block.timestamp;
 
-    _drawCard(_photoPoolId, 0);
+    _drawCard(_photoPoolId, block.timestamp);
   }
 
   function drawCard(uint256 _photoPoolId) external payable {
     require(msg.value == drawCardPrice, "paying incorrect amount");
-    _drawCard(_photoPoolId, 0);
+    _drawCard(_photoPoolId, block.timestamp);
   }
 
   function drawMultipleCards(uint256 _photoPoolId, uint256 _amount) external payable {
@@ -340,7 +365,7 @@ contract CryptoBeauty is Ownable {
     require(msg.value == drawCardPrice.mul(_amount), "paying not correct amount");
 
     for (uint256 i = 0; i < _amount; i++) {
-      _drawCard(_photoPoolId, i.mul(now).mod(_amount));
+      _drawCard(_photoPoolId, i.mul(block.timestamp));
     }
   }
 
@@ -351,12 +376,15 @@ contract CryptoBeauty is Ownable {
     require(msg.value == drawCardPrice.mul(_photoPoolIds.length), "paying not correct amount");
 
     for (uint256 i = 0; i < _photoPoolIds.length; i++) {
-      _drawCard(_photoPoolIds[i], i.mul(now).mod(_photoPoolIds.length));
+      _drawCard(_photoPoolIds[i], i.mul(block.timestamp));
     }
   }
 
   function transfer(uint256 _cardId, address _to) external {
+    require(_to != address(0x0));
+    require(isValidCardId(_cardId));
     require(cards[_cardId].holder == msg.sender);
+
     _transferCard(_cardId, msg.sender, _to);
   }
 
@@ -378,6 +406,31 @@ contract CryptoBeauty is Ownable {
     return _photoPoolId < photoPools.length;
   }
 
+  function isValidCardId(uint256 _cardId) public view returns (bool) {
+    return _cardId < cards.length;
+  }
+
+  function drawnCardIdsOf(address _user) external view returns(uint256[] cardIds) {
+    return playerDrawnCardIds[_user];
+  }
+
+  function playerDrawnCardIdIsHeldOf(address _user, uint256 _cardId) external view returns(bool) {
+    return playerDrawnCardIdIsHeld[_user][_cardId];
+  }
+
+  function drawnCardsOf(address _user) external view returns(uint256[] cardIds, uint256[] photoIds, uint256[] rarityScores) {
+    uint256[] storage _cardIds = playerDrawnCardIds[_user];
+    uint256[] memory _photoIds = new uint256[](_cardIds.length);
+    uint256[] memory _rarityScores = new uint256[](_cardIds.length);
+
+    for (uint256 i = 0; i < _cardIds.length; i++) {
+      _photoIds[i] = cards[_cardIds[i]].photoId;
+      _rarityScores[i] = cards[_cardIds[i]].rarityScore;
+    }
+
+    return (_cardIds, _photoIds, _rarityScores);
+  }
+
   // ---------------- internal functions -----------------
 
   function _drawCard(uint256 _photoPoolId, uint256 _salt) internal {
@@ -396,6 +449,9 @@ contract CryptoBeauty is Ownable {
     uint256 _cardId = cards.length;
     cards.push(_card);
 
+    playerDrawnCardIds[msg.sender].push(_cardId);
+    playerDrawnCardIdIsHeld[msg.sender][_cardId] = true;
+
     emit CardDrawn(
       _cardId,
       _photoId,
@@ -411,19 +467,14 @@ contract CryptoBeauty is Ownable {
   }
 
   function _drawPhotoId(uint256 _photoPoolId, uint256 _salt) internal returns(uint256 _photoId) {
+    require(isValidPoolId(_photoPoolId));  // if _photoPoolId is valid, draw from pool
+
+    uint256[] storage _photoIds = photoPools[_photoPoolId].photoIds;
+    require(_photoIds.length > 0, "There are no photos in pool");
+
     uint256 _rand = _random(_salt);
 
-    // if _photoPoolId is valid, draw from pool
-    if (isValidPoolId(_photoPoolId)) {
-      uint256[] storage _photoIds = photoPools[_photoPoolId].photoIds;
-      require(_photoIds.length > 0, "There are no photos in pool");
-      return _photoIds[ _rand % _photoIds.length ];
-    }
-    // if _photoPoolId is not valid, draw from all photos
-    else {
-      require(photos.length > 0, "There are no photos.");
-      return _rand % photos.length;
-    }
+    return _photoIds[ _rand.mod(_photoIds.length) ];
   }
 
   function _drawRarityScore(uint256 _salt) internal returns(uint256 _rarityScore) {
@@ -431,7 +482,15 @@ contract CryptoBeauty is Ownable {
   }
 
   function _transferCard(uint256 _cardId, address _from, address _to) internal {
+    // set card holder
     cards[_cardId].holder = _to;
+
+    // remove card from sender (_from). The array remains the same.
+    playerDrawnCardIdIsHeld[_from][_cardId] = false;
+
+    // add card to receiver (_to)
+    playerDrawnCardIds[_to].push(_cardId);
+    playerDrawnCardIdIsHeld[_to][_cardId] = true;
 
     emit Transfer(
       _cardId,

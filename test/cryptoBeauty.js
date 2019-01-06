@@ -110,6 +110,10 @@ contract('CryptoBeauty', accounts => {
         from: player1
       })
     );
+
+    const cardId = 0;
+    const player1HasCard0 = await cryptoBeauty.playerDrawnCardIdIsHeldOf(player1, cardId);
+    assert(player1HasCard0 == true);
   });
 
   it('player pay to draw second time', async () => {
@@ -130,7 +134,7 @@ contract('CryptoBeauty', accounts => {
   });
 
   it('player pay to draw second time', async () => {
-    // draw 3 times from pool id 0 
+    // draw 3 times from pool id 0
     receipt = await cryptoBeauty.drawMultipleCardsFromMultiplePools([0, 0, 0], {
       from: player1,
       value: drawCardPrice * 3
@@ -144,6 +148,12 @@ contract('CryptoBeauty', accounts => {
     receipt = await cryptoBeauty.transfer(cardId, to, {
       from: player1
     });
+
+    const player1HasCard0 = await cryptoBeauty.playerDrawnCardIdIsHeldOf(player1, cardId);
+    assert(player1HasCard0 == false);
+
+    const player2HasCard0 = await cryptoBeauty.playerDrawnCardIdIsHeldOf(player2, cardId);
+    assert(player2HasCard0 == true);
   });
 
   it('anyone can view card info', async () => {
@@ -160,4 +170,15 @@ contract('CryptoBeauty', accounts => {
 
   });
 
+  it('can view drawnCardsOf a user', async () => {
+    // draw 10 times
+    var drawTime = 10;
+    receipt = await cryptoBeauty.drawMultipleCards(poolId, drawTime, {
+      from: player1,
+      value: drawCardPrice * drawTime
+    });
+
+    const drawnCards = await cryptoBeauty.drawnCardsOf(player1);
+    // console.log("drawnCards", drawnCards);
+  });
 });

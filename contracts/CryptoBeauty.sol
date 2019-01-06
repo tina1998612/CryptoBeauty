@@ -1,5 +1,6 @@
 /*
- *
+ * Terms:
+ * >> Salt: a number that accompany with random draw to make multiple drawing different across cards
 */
 pragma solidity ^0.4.23;
 
@@ -32,9 +33,12 @@ contract CryptoBeauty is Ownable {
   Photo[] public photos;
 
   mapping (address => uint256) public playerLastFreeDrawTime;
+  mapping (address => uint256[]) public playerDrawnCardIds;
+  mapping (address => mapping (uint256 => bool)) public playerDrawnCardIdIsHeld;
   address public ownerWalletAddr;
 
-  uint256 public drawCardPrice;
+  uint256 public drawCardPrice = 20000000;  // 20 TRX (6 accuracy)
+  uint256 public freeDrawTimeGap = 23 hours;
 
   /* events */
 
@@ -70,6 +74,16 @@ contract CryptoBeauty is Ownable {
   // ------------ external functions -------------------
 
   /* manager methods */
+
+  function setDrawCardPrice(uint256 _price) external onlyOwner {
+    require(_price != 0);
+    drawCardPrice = _price;
+  }
+
+  function setFreeDrawTimeGap(uint256 _gap) external onlyOwner {
+    require(_gap != 0);
+    freeDrawTimeGap = _gap;
+  }
 
   function withdraw(uint256 amount) external onlyOwner {
     require(address(this).balance >= amount);
@@ -123,7 +137,7 @@ contract CryptoBeauty is Ownable {
 
   function freeDrawCard(uint256 _photoPoolId) external {
     // free draw if play has not drew before or today is first draw
-    require(playerLastFreeDrawTime[msg.sender] == 0 || playerLastFreeDrawTime[msg.sender].add(1 days) <= block.timestamp);
+    require(playerLastFreeDrawTime[msg.sender] == 0 || playerLastFreeDrawTime[msg.sender].add(freeDrawTimeGap) <= block.timestamp);
 
     // MUST be valid photo pool ID
     require(isValidPhotoId(_photoPoolId));
@@ -189,6 +203,27 @@ contract CryptoBeauty is Ownable {
     return _cardId < cards.length;
   }
 
+  function drawnCardIdsOf(address _user) external view returns(uint256[] cardIds) {
+    return playerDrawnCardIds[_user];
+  }
+
+  function playerDrawnCardIdIsHeldOf(address _user, uint256 _cardId) external view returns(bool) {
+    return playerDrawnCardIdIsHeld[_user][_cardId];
+  }
+
+  function drawnCardsOf(address _user) external view returns(uint256[] cardIds, uint256[] photoIds, uint256[] rarityScores) {
+    uint256[] storage _cardIds = playerDrawnCardIds[_user];
+    uint256[] memory _photoIds = new uint256[](_cardIds.length);
+    uint256[] memory _rarityScores = new uint256[](_cardIds.length);
+
+    for (uint256 i = 0; i < _cardIds.length; i++) {
+      _photoIds[i] = cards[_cardIds[i]].photoId;
+      _rarityScores[i] = cards[_cardIds[i]].rarityScore;
+    }
+
+    return (_cardIds, _photoIds, _rarityScores);
+  }
+
   // ---------------- internal functions -----------------
 
   function _drawCard(uint256 _photoPoolId, uint256 _salt) internal {
@@ -206,6 +241,9 @@ contract CryptoBeauty is Ownable {
     });
     uint256 _cardId = cards.length;
     cards.push(_card);
+
+    playerDrawnCardIds[msg.sender].push(_cardId);
+    playerDrawnCardIdIsHeld[msg.sender][_cardId] = true;
 
     emit CardDrawn(
       _cardId,
@@ -237,7 +275,15 @@ contract CryptoBeauty is Ownable {
   }
 
   function _transferCard(uint256 _cardId, address _from, address _to) internal {
+    // set card holder
     cards[_cardId].holder = _to;
+
+    // remove card from sender (_from). The array remains the same.
+    playerDrawnCardIdIsHeld[_from][_cardId] = false;
+
+    // add card to receiver (_to)
+    playerDrawnCardIds[_to].push(_cardId);
+    playerDrawnCardIdIsHeld[_to][_cardId] = true;
 
     emit Transfer(
       _cardId,
