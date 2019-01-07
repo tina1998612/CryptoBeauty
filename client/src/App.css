@@ -31,7 +31,6 @@
   }
 }
 
-
 .button-muted {
   cursor: default;
 	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#606060+0,a0a0a0+100 */
@@ -40,4 +39,106 @@
 	background: -webkit-linear-gradient(left, #606060 0%,#a0a0a0 100%); /* Chrome10-25,Safari5.1-6 */
 	background: linear-gradient(to right, #606060 0%,#a0a0a0 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#606060', endColorstr='#a0a0a0',GradientType=1 ); /* IE6-9 */
+}
+
+.article-card {
+  width: 33.333333%;
+  display: inline-block;
+  padding: 15px;
+}
+
+@media only screen and (max-width: 768px) {
+  .article-card {
+    width: 100%;
+  }
+}
+
+.card-image-container {
+	position: relative;
+}
+
+.card-image-container > img {
+  width: 100%;
+}
+
+/* .card-image-container-2 {
+	position: absolute;
+} */
+
+.card-frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  background-color: #CCC;
+
+  margin: 100px auto;
+  -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
+  animation: sk-rotateplane 1.2s infinite ease-in-out;
+}
+
+@-webkit-keyframes sk-rotateplane {
+  0% { -webkit-transform: perspective(120px) }
+  50% { -webkit-transform: perspective(120px) rotateY(180deg) }
+  100% { -webkit-transform: perspective(120px) rotateY(180deg)  rotateX(180deg) }
+}
+
+@keyframes sk-rotateplane {
+  0% {
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg)
+  } 50% {
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg)
+  } 100% {
+    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+  }
+}
+
+.text-white-outlined {
+  color: white;
+  /* text-stroke: 1px rgb(68, 188, 221); */
+  /* -webkit-text-stroke: 1px rgb(68, 188, 221); */
+  font-weight: bold;
+  text-shadow:
+  -1px -1px 0 rgb(68, 188, 221),
+  1px -1px 0 rgb(68, 188, 221),
+  -1px 1px 0 rgb(68, 188, 221),
+  1px 1px 0 rgb(68, 188, 221),
+  -1px 0 0 rgb(68, 188, 221),
+  1px 0 0 rgb(68, 188, 221),
+  0 1px 0 rgb(68, 188, 221),
+  0 -1px 0 rgb(68, 188, 221);
+}
+
+.navbar-default-style {
+  line-height:60px; height:60px;
+  background-color:rgba(68,188,221,1);
+}
+
+.navbar-brand-default-style {
+  line-height:60px;
+}
+/*
+.cryptobeauty-logo-img {
+  width: 400px;
+  left: 60px;
+  top: 35px;
+  position: "absolute";
+} */
+
+@media only screen and (max-width: 768px) {
+  .cryptobeauty-logo-img {
+    max-width: 100vw !important;
+    left: 0px !important;
+  }
+}
+
+.cryptobeauty-title {
+  display: inline-block;
 }

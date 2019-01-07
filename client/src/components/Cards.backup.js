@@ -243,7 +243,7 @@ class Card extends Component {
     const frameImgSrc = getFrameImgSrc(rarityScore);
 
     return (
-      <article className="article-card">
+      <article className="col-md-4 isotopeItem">
         <div className="portfolio-item">
           <div className="card-image-container">
             <img className="card-photo" src={ photoImgSrc } alt="" />
@@ -280,8 +280,12 @@ class Cards extends Component {
     }
 
     return (
-      <div className="text-center" style={{width: "100%"}}>
-        { cardDivs }
+      <div className="col-md-12">
+        <div className="row">
+          <div className="portfolio-items isotopeWrapper clearfix">
+            { cardDivs }
+          </div>
+        </div>
       </div>
     );
   }
