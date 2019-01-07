@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Route, Link, Switch } from "react-router-dom";
 import { ParallaxProvider } from 'react-skrollr'
+import { AlertList, Alert, AlertContainer } from "react-bs-notifier";
 // const skrollr = require('skrollr');
 
 import ContractJSON from "./contracts_for_client/CryptoBeauty.json";
@@ -20,6 +21,8 @@ import "./App.css";
 // import "./css/style.css";
 // import "./css/default.css";
 
+const pollingInterval = 2000;
+
 class App extends Component {
   state = {
     tronWebState: {
@@ -29,23 +32,66 @@ class App extends Component {
     tronWeb: null,
     defaultAddress: null,
     ContractJSON: ContractJSON,
-    networkId: '2',
+    networkId: '1',
+    networkName: 'Mainnet',
     abi: [],
 
     accounts: null,
     contract: null,
 
-    drawCardPrice: 50000000,
+    drawCardPrice: 20000000,
     myCards: [],
+    // myCards: [
+    //   {
+    //     photoId: "0",
+    //     rarityScore: "0",
+    //   },
+    //   {
+    //     photoId: "7",
+    //     rarityScore: "5",
+    //   },
+    //   {
+    //     photoId: "14",
+    //     rarityScore: "50",
+    //   },
+    //   {
+    //     photoId: "21",
+    //     rarityScore: "200",
+    //   },
+    //   {
+    //     photoId: "28",
+    //     rarityScore: "800",
+    //   },
+    // ],
     playerLastFreeDrawTime: 0,
     freeDrawTimeGap: 82800, // 23 hours
+    alerts: [],
+    isDrawingCard: false,
+    isDrawingCardSent: false,
+    isDrawingCardFailed: false,
+    justDrawnCards: [],
   };
 
   componentDidMount = async () => {
     try {
-      const { networkId } = this.state;
+      // const { networkId } = this.state;
 
       const tronWeb = await getTronWeb();
+
+      // get networkId
+      let networkId = '1';
+      let networkName = 'Mainnet';
+      if (tronWeb.fullNode.host.includes('shasta')) {
+        networkId = '2';
+        networkName = 'Shasta Testnet';
+      } else if (tronWeb.fullNode.host.includes('api.trongrid.io')) {
+        networkId = '1';
+        networkName = 'Mainnet';
+      } else {
+        // networkId = '-1';
+        networkName = 'Unknown Network';
+      }
+      console.log("networkId", networkId);
 
       const tronWebState = {
         installed: !!tronWeb,
@@ -55,6 +101,8 @@ class App extends Component {
       this.setState({
         tronWeb,
         tronWebState,
+        networkId,
+        networkName,
       });
 
       const abi = ContractJSON.abi;
@@ -182,28 +230,31 @@ class App extends Component {
   };
 
   getMyCards = async () => {
-    const { tronWeb, networkId, ContractJSON, defaultAddress } = this.state;
+    const { contract, defaultAddress } = this.state;
 
-    const contractAddressBase58 = ContractJSON.networks[networkId].addressBase58;
+    console.log("getMyCards");
 
-    const Http = new XMLHttpRequest();
-    let url;
-    if (networkId == '2') {
-      url = 'https://api.shasta.trongrid.io/event/contract/'
-        + contractAddressBase58
-        + '/CardDrawn?since=1546530140000&size=200&page=1';
+    const drawnCards = await contract.drawnCardsOf(defaultAddress.hex).call();
+    console.log("drawnCards", drawnCards);
+
+    let cards = [];
+    for (let i = 0; i < drawnCards.cardIds.length; i++) {
+    // for (let i = drawnCards.cardIds.length - 1; i >= 0; i--) {
+      cards.push({
+        cardId: drawnCards.cardIds[i].toNumber(),
+        photoId: drawnCards.photoIds[i].toNumber(),
+        rarityScore: drawnCards.rarityScores[i].toNumber(),
+      })
     }
-    Http.open("GET", url);
-    Http.send();
-    Http.onreadystatechange=(e)=>{
-      console.log(Http.responseText)
-    }
+    this.setState({
+      myCards: cards
+    });
+
+    return cards
 
     // const { tronWeb, networkId, ContractJSON, defaultAddress } = this.state;
 
     // const contractAddressBase58 = ContractJSON.networks[networkId].addressBase58;
-
-    // console.log("getMyCards");
 
     // const events = await tronWeb.getEventResult(
     //   contractAddressBase58,
@@ -229,25 +280,6 @@ class App extends Component {
     // this.setState({ myCards });
   };
 
-  getMyCardsFromRequest = async () => {
-    const { tronWeb, networkId, ContractJSON, defaultAddress } = this.state;
-
-    const contractAddressBase58 = ContractJSON.networks[networkId].addressBase58;
-
-    const Http = new XMLHttpRequest();
-    let url;
-    if (networkId == '2') {
-      url = 'https://api.shasta.trongrid.io/event/contract/'
-        + contractAddressBase58
-        + '/CardDrawn?since=1546530140000&size=200&page=1';
-    }
-    Http.open("GET", url);
-    Http.send();
-    Http.onreadystatechange=(e)=>{
-      console.log(Http.responseText)
-    }
-  }
-
   getPlayerLastFreeDrawTime = async () => {
     const { contract, defaultAddress } = this.state;
 
@@ -263,19 +295,49 @@ class App extends Component {
 
     console.log("freeDrawCard");
 
-    const result = await contract.freeDrawCard(10000000).send({
+    this.onDrawingCard();
+
+    // contract.freeDrawCard(0).send({
+    //   feeLimit: undefined,
+    //   callValue: 0,
+    //   shouldPollResponse: true
+    // })
+    // .then((result) => {
+    //   console.log("freeDrawCard result", result);
+    //   // onFreeCardDrawn
+    //   this.getPlayerLastFreeDrawTime();
+    //   this.onCardDrawn(1);
+    // }, (error) => {
+    //   console.log("freeDrawCard error", error);
+    //   this.onDrawingCardFailed();
+    // });
+
+    contract.freeDrawCard(0).send({
       feeLimit: undefined,
       callValue: 0,
-      shouldPollResponse: true
+      shouldPollResponse: false // resolve when tx broadcasted
+    })
+    .then((result) => {
+      console.log("freeDrawCard result", result);
+      // onFreeCardDrawn
+      // this.getPlayerLastFreeDrawTime();
+      this.onDrawingCardSent(1);
+    }, (error) => {
+      console.log("freeDrawCard error", error);
+      this.onDrawingCardFailed();
     });
-    console.log(result);
-    this.getPlayerLastFreeDrawTime();
-    this.getMyCards();
-    alert("抽卡完成，請點擊右上角 My Girls 前往查看");
 
-    // this.triggerContract('freeDrawCard', [0], (transactionHash) => {
-    //   console.log("freeDrawCard transactionHash", transactionHash);
+    // const result = await contract.freeDrawCard(0).send({
+    //   feeLimit: undefined,
+    //   callValue: 0,
+    //   shouldPollResponse: true
     // });
+    // console.log("freeDrawCard result", result);
+
+    // // onFreeCardDrawn
+    // this.getPlayerLastFreeDrawTime();
+
+    // this.onCardDrawn(1);
   };
 
   drawCard = async () => {
@@ -283,30 +345,197 @@ class App extends Component {
 
     console.log("drawCard");
 
-    const result = await contract.drawCard(0).send({
+    this.onDrawingCard();
+
+    // contract.drawCard(0).send({
+    //   feeLimit: undefined,
+    //   callValue: drawCardPrice,
+    //   shouldPollResponse: true
+    // })
+    // .then((result) => {
+    //   console.log("drawCard result", result);
+    //   this.onCardDrawn(1);
+    // }, (error) => {
+    //   console.log("drawCard error", error);
+    //   this.onDrawingCardFailed();
+    // });
+
+
+    contract.drawCard(0).send({
       feeLimit: undefined,
       callValue: drawCardPrice,
-      shouldPollResponse: true
+      shouldPollResponse: false // resolve when tx broadcasted
+    })
+    .then((result) => {
+      console.log("drawCard result", result); // tx id
+
+      this.onDrawingCardSent(1);
+    }, (error) => {
+      console.log("drawCard error", error);
+      this.onDrawingCardFailed();
     });
-    console.log("drawCard result", result);
-    this.getMyCards();
-    alert("抽卡完成，請點擊右上角 My Girls 前往查看");
+
+    // const result = await contract.drawCard(0).send({
+    //   feeLimit: undefined,
+    //   callValue: drawCardPrice,
+    //   shouldPollResponse: true
+    // });
+    // console.log("drawCard result", result);
+
+    // this.onCardDrawn(1);
   };
 
   draw10Cards = async () => {
     const { contract, drawCardPrice } = this.state;
 
     console.log("draw10Cards");
-    const cardCount = 10
-    const result = await contract.drawMultipleCards(0, cardCount).send({
+
+    this.onDrawingCard();
+
+    const cardCount = 10;
+
+    // contract.drawMultipleCards(0, cardCount).send({
+    //   feeLimit: undefined,
+    //   callValue: drawCardPrice * cardCount,
+    //   shouldPollResponse: true
+    // })
+    // .then((result) => {
+    //   console.log("draw10Cards result", result);
+    //   this.onCardDrawn(10);
+    // }, (error) => {
+    //   console.log("draw10Cards error", error);
+    //   this.onDrawingCardFailed();
+    // });
+
+    contract.drawMultipleCards(0, cardCount).send({
       feeLimit: undefined,
       callValue: drawCardPrice * cardCount,
-      shouldPollResponse: true
+      shouldPollResponse: false // resolve when tx broadcasted
+    })
+    .then((result) => {
+      console.log("draw10Cards result", result);
+      this.onDrawingCardSent(10);
+    }, (error) => {
+      console.log("draw10Cards error", error);
+      this.onDrawingCardFailed();
     });
-    console.log("drawCard result", result);
-    this.getMyCards();
-    alert("抽卡完成，請點擊右上角 My Girls 前往查看");
+
+    // const result = await contract.drawMultipleCards(0, cardCount).send({
+    //   feeLimit: undefined,
+    //   callValue: drawCardPrice * cardCount,
+    //   shouldPollResponse: true
+    // });
+    // console.log("drawCard result", result);
+
+    // this.onCardDrawn(10);
   };
+
+  onDrawingCard = async () => {
+    this.setState({
+      isDrawingCard: true,
+    });
+  }
+
+  onDrawingCardSent = async (cardCount) => {
+    this.setState({
+      isDrawingCardSent: true,
+    });
+
+    // this.pollDrawingCard(cardCount);
+    setTimeout(() => {
+      this.pollDrawingCard(cardCount)
+    }, pollingInterval);
+  }
+
+  pollDrawingCard = async (cardCount) => {
+    console.log("pollDrawingCard");
+
+    const oldMyCardsLength = this.state.myCards.length;
+
+    const newMyCards = await this.getMyCards();
+
+    if (newMyCards.length > oldMyCardsLength) {
+      this.onPollCardDrawn(cardCount);
+    } else {
+      setTimeout(() => {
+        this.pollDrawingCard(cardCount)
+      }, pollingInterval);
+    }
+  }
+
+  onDrawingCardFailed = async () => {
+    // this.pushAlert({
+    //   id: Date.now(),
+    //   type: "error",
+    //   message: "抽卡失敗，請確定你的 TronLink 連接到主網上，並且擁有足夠的 TRX"
+    // });
+
+    this.setState({
+      isDrawingCard: false,
+      isDrawingCardSent: false,
+      isDrawingCardFailed: true,
+    });
+  }
+
+  onCardDrawn = async (cardCount) => {
+    console.log("onCardDrawn");
+
+    await this.getMyCards();
+
+    const { myCards } = this.state;
+    const justDrawnCards = myCards.slice(Math.max(myCards.length - cardCount, 0));
+    console.log("justDrawnCards", justDrawnCards);
+    this.setState({
+      isDrawingCard: false,
+      isDrawingCardSent: false,
+      justDrawnCards
+    });
+
+    // this.pushAlert({
+    //   id: Date.now(),
+    //   type: "success",
+    //   message:"抽卡完成，請點擊右上角 My Girls 前往查看"
+    // });
+  }
+
+  onPollCardDrawn = async (cardCount) => {
+    console.log("onPollCardDrawn");
+
+    setTimeout(async () => {
+      await this.getMyCards();
+
+      const { myCards } = this.state;
+      const justDrawnCards = myCards.slice(Math.max(myCards.length - cardCount, 0));
+      console.log("justDrawnCards", justDrawnCards);
+      this.setState({
+        isDrawingCard: false,
+        isDrawingCardSent: false,
+        justDrawnCards
+      });
+
+      this.getPlayerLastFreeDrawTime();
+    }, pollingInterval);
+  }
+
+  pushAlert = async (alertObj) => {
+    this.state.alerts.push(alertObj);
+
+    this.setState({
+      alerts: this.state.alerts
+    });
+  }
+
+  dismissAlert = async (input) => {
+    console.log("input", input);
+
+    const alerts = this.state.alerts.filter((alertObj) => {
+      return alertObj.id != input.id;
+    });
+
+    this.setState({
+      alerts
+    });
+  }
 
   render() {
     // if (!this.state.tronWeb) {
@@ -332,19 +561,31 @@ class App extends Component {
         }}
       >
         <div className="App">
+          <AlertList
+            timeout={5000}
+            onDismiss={this.dismissAlert}
+            position="bottom-left"
+            alerts={this.state.alerts}
+          />
+
           <section id="header" className="appear"></section>
-          <div className="navbar navbar-fixed-top" role="navigation" data-0="line-height:60px; height:60px; background-color:rgba(68,188,221,1);" data-300="line-height:40px; height:40px; background-color:rgba(68,188,221,0.6);">
+          <div className="navbar navbar-fixed-top navbar-default-style"
+          style={{ backgroundColor: "rgba(68,188,221,1)", paddingLeft: "15px" }}
+          role="navigation" data-0="line-height:60px; height:60px; background-color:rgba(68,188,221,1);" data-300="line-height:40px; height:40px; background-color:rgba(68,188,221,0.6);">
             <div className="container">
               <div className="navbar-header">
                 <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span className="fa fa-bars color-white"></span>
                   </button>
                 <h1>
-                  <Link to="/" className="navbar-brand" data-0="line-height:60px;" data-300="line-height:50px;">CryptoBeauty</Link>
+                  <Link to="/" className="navbar-brand navbar-brand-default-style" data-0="line-height:60px;" data-300="line-height:50px;">CryptoBeauty</Link>
                 </h1>
               </div>
               <div className="navbar-collapse collapse">
                 <ul className="nav navbar-nav" data-0="margin-top:10px;" data-300="margin-top:5px;">
+                  <li>
+                    <a style={{color: "#DDD"}}>on {this.state.networkName}</a>
+                  </li>
                   <li>
                     <Switch>
                       <Route exact path="/asset">
@@ -377,8 +618,8 @@ class App extends Component {
                   {
                   !this.state.tronWebState.loggedIn ?
                   <div>
-                    <h2>您與密碼女孩的距離</h2>
-                    <h2>只剩下一個已解鎖的 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h2>
+                    <h3>請在電腦上用 <a target="_blank" rel="noopener noreferrer"  href="https://www.google.com/chrome/">Chrome</a> 開啟網頁</h3>
+                    <h3>並安裝與解鎖 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
                   </div>
                   :
                   <div className="row">
@@ -393,7 +634,13 @@ class App extends Component {
                       </ul>
                     </nav> */}
 
-                    <Cards cards={this.state.myCards}></Cards>
+                    {
+                      this.state.myCards.length === 0 ?
+                      <h3>你還沒有卡片，快<Link to="/">回到首頁</Link>抽一張吧！</h3>
+                      :
+                      <Cards cards={this.state.myCards} reversed={true}></Cards>
+                    }
+
                   </div>
                   }
 
@@ -409,10 +656,10 @@ class App extends Component {
               <section id="parallax4" className="section pad-top150 pad-bot150" data-stellar-background-ratio="0.5">
                 <div className="container">
                   <div className="align-center pad-top150 pad-bot150">
-                    <img className="align-left"
-                      style={{width: "400px", left: "60px", top: "35px", position: "absolute"}} src="img/logo/cryptobeautylogo01.png" alt="" />
-                    <h1 className="align-left color-black pad-top20">Crypto Beauty <span className="color-2blue">密碼女孩</span></h1>
-                    <h4 className="align-left color-black"><b>你專屬的區塊鏈少女卡片創作交易平台</b></h4>
+                    <img className="align-left cryptobeauty-logo-img"
+                      style={{width: "400px", left: "40px", top: "45px", position: "absolute"}} src="img/logo/cryptobeautylogo01.png" alt="" />
+                    <h1 className="align-left text-white-outlined pad-top20">Crypto Beauty <span className="cryptobeauty-title">密碼女孩</span></h1>
+                    <h3 className="align-left text-white-outlined"><b>你專屬的區塊鏈少女卡片創作交易平台</b></h3>
                   </div>
                 </div>
               </section>
@@ -424,9 +671,13 @@ class App extends Component {
 
                   {
                   !this.state.tronWebState.loggedIn ?
+                  // <div>
+                  //   <h3>您與密碼女孩的距離</h3>
+                  //   <h3>只剩下一個已解鎖的 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
+                  // </div>
                   <div>
-                    <h2>您與密碼女孩的距離</h2>
-                    <h2>只剩下一個已解鎖的 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h2>
+                    <h3>請在電腦上用 <a target="_blank" rel="noopener noreferrer"  href="https://www.google.com/chrome/">Chrome</a> 開啟網頁</h3>
+                    <h3>並安裝與解鎖 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
                   </div>
                   :
                   <div className="row mar-bot40">
@@ -469,7 +720,7 @@ class App extends Component {
                               </div>
                             </div>
                         </div>
-                        <h4 className="color-2blue">50 TRX</h4>
+                        <h4 className="color-2blue">{this.state.drawCardPrice / 1000000} TRX</h4>
                       </div>
                     </div>
 
@@ -482,18 +733,32 @@ class App extends Component {
                             </div>
                           </div>
                         </div>
-                        <h4 className="color-2blue">500 TRX</h4>
+                        <h4 className="color-2blue">{this.state.drawCardPrice / 1000000 * 10} TRX</h4>
                       </div>
                     </div>
 
-                    {/* tx state */}
-                    <div>
-
-                    </div>
-
                   </div>
-
                   }
+
+                  {/* state of drawing */}
+                  {
+                  this.state.isDrawingCard ?
+                  <div>
+                    <div className="spinner"></div>
+                    {
+                      this.state.isDrawingCardSent &&
+                      <h3 className="">抽卡中，若卡片久未出現，請手動<Link to="/asset">跳轉至 My Girls 查看</Link></h3>
+                    }
+                  </div>
+                  :(
+                  this.state.isDrawingCardFailed ?
+                  <div>
+                    <h3>抽卡失敗</h3>
+                    <h4>請確定 TronLink 連接到主網上，並且擁有足夠的 TRX</h4>
+                  </div>
+                  :
+                  <Cards cards={this.state.justDrawnCards} reversed={true}></Cards>
+                  )}
 
                 </div>
               </section>
@@ -504,7 +769,7 @@ class App extends Component {
                     <div className="col-lg-12">
                       <div className="align-center">
                         <div className="testimonial pad-top40 pad-bot40">
-                          <h1 className="color-swimsuitblue">
+                          <h1 className="text-white-outlined">
                             取得網紅私密線下活動的專屬門票
                           </h1>
                           <br/>
