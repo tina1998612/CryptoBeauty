@@ -6,9 +6,10 @@
 
 ![cover photo](./assets/cover.png)
 
-### LIVE ON MAINNET! 主網上線！
+### LIVE ON TRON MAINNET! 波場主網上線中！
 
-[Link to mainnet contract explorer](https://tronscan.org/#/contract/TXh5o25svsvgmxqDG35gU1Xcq5BcmwmcqS)
+[點我看即時交易紀錄](https://tronscan.org/#/contract/TXh5o25svsvgmxqDG35gU1Xcq5BcmwmcqS)<br>
+
 ![mainnet contract](./assets/mainnet.png)
 
 ## Development
