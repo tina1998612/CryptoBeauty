@@ -6,7 +6,7 @@
 
 ![cover photo](./assets/cover.png)
 
-### LIVE ON MAINNET! 主網上線！
+### LIVE ON MAINNET! 主網上線！
 
 [Link to mainnet contract explorer](https://tronscan.org/#/contract/TXh5o25svsvgmxqDG35gU1Xcq5BcmwmcqS)
 ![mainnet contract](./assets/mainnet.png)
