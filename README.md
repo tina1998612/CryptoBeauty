@@ -34,3 +34,9 @@ More instructions are in the README under `client` directory.
 cd client
 npm start
 ```
+### To build and publish
+```
+cd client
+npn run build
+gh-pages -d build
+```
