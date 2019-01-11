@@ -179,7 +179,7 @@ class App extends Component {
     const freeDrawTimeGap = await contract.freeDrawTimeGap().call();
     console.log("freeDrawTimeGap", freeDrawTimeGap, freeDrawTimeGap.toNumber());
     this.setState({
-      freeDrawTimeGap:  freeDrawTimeGap.toNumber()
+      freeDrawTimeGap: freeDrawTimeGap.toNumber()
     });
   };
 
@@ -239,7 +239,7 @@ class App extends Component {
 
     let cards = [];
     for (let i = 0; i < drawnCards.cardIds.length; i++) {
-    // for (let i = drawnCards.cardIds.length - 1; i >= 0; i--) {
+      // for (let i = drawnCards.cardIds.length - 1; i >= 0; i--) {
       cards.push({
         cardId: drawnCards.cardIds[i].toNumber(),
         photoId: drawnCards.photoIds[i].toNumber(),
@@ -317,15 +317,15 @@ class App extends Component {
       callValue: 0,
       shouldPollResponse: false // resolve when tx broadcasted
     })
-    .then((result) => {
-      console.log("freeDrawCard result", result);
-      // onFreeCardDrawn
-      // this.getPlayerLastFreeDrawTime();
-      this.onDrawingCardSent(1);
-    }, (error) => {
-      console.log("freeDrawCard error", error);
-      this.onDrawingCardFailed();
-    });
+      .then((result) => {
+        console.log("freeDrawCard result", result);
+        // onFreeCardDrawn
+        // this.getPlayerLastFreeDrawTime();
+        this.onDrawingCardSent(1);
+      }, (error) => {
+        console.log("freeDrawCard error", error);
+        this.onDrawingCardFailed();
+      });
 
     // const result = await contract.freeDrawCard(0).send({
     //   feeLimit: undefined,
@@ -366,14 +366,14 @@ class App extends Component {
       callValue: drawCardPrice,
       shouldPollResponse: false // resolve when tx broadcasted
     })
-    .then((result) => {
-      console.log("drawCard result", result); // tx id
+      .then((result) => {
+        console.log("drawCard result", result); // tx id
 
-      this.onDrawingCardSent(1);
-    }, (error) => {
-      console.log("drawCard error", error);
-      this.onDrawingCardFailed();
-    });
+        this.onDrawingCardSent(1);
+      }, (error) => {
+        console.log("drawCard error", error);
+        this.onDrawingCardFailed();
+      });
 
     // const result = await contract.drawCard(0).send({
     //   feeLimit: undefined,
@@ -412,13 +412,13 @@ class App extends Component {
       callValue: drawCardPrice * cardCount,
       shouldPollResponse: false // resolve when tx broadcasted
     })
-    .then((result) => {
-      console.log("draw10Cards result", result);
-      this.onDrawingCardSent(10);
-    }, (error) => {
-      console.log("draw10Cards error", error);
-      this.onDrawingCardFailed();
-    });
+      .then((result) => {
+        console.log("draw10Cards result", result);
+        this.onDrawingCardSent(10);
+      }, (error) => {
+        console.log("draw10Cards error", error);
+        this.onDrawingCardFailed();
+      });
 
     // const result = await contract.drawMultipleCards(0, cardCount).send({
     //   feeLimit: undefined,
@@ -570,13 +570,13 @@ class App extends Component {
 
           <section id="header" className="appear"></section>
           <div className="navbar navbar-fixed-top navbar-default-style"
-          style={{ backgroundColor: "rgba(68,188,221,1)", paddingLeft: "15px" }}
-          role="navigation" data-0="line-height:60px; height:60px; background-color:rgba(68,188,221,1);" data-300="line-height:40px; height:40px; background-color:rgba(68,188,221,0.6);">
+            style={{ backgroundColor: "rgba(68,188,221,1)", paddingLeft: "15px" }}
+            role="navigation" data-0="line-height:60px; height:60px; background-color:rgba(68,188,221,1);" data-300="line-height:40px; height:40px; background-color:rgba(68,188,221,0.6);">
             <div className="container">
               <div className="navbar-header">
                 <button type="button" className="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span className="fa fa-bars color-white"></span>
-                  </button>
+                  <span className="fa fa-bars color-white"></span>
+                </button>
                 <h1>
                   <Link to="/" className="navbar-brand navbar-brand-default-style" data-0="line-height:60px;" data-300="line-height:50px;">CryptoBeauty</Link>
                 </h1>
@@ -584,7 +584,7 @@ class App extends Component {
               <div className="navbar-collapse collapse">
                 <ul className="nav navbar-nav" data-0="margin-top:10px;" data-300="margin-top:5px;">
                   <li>
-                    <a style={{color: "#DDD"}}>on {this.state.networkName}</a>
+                    <a style={{ color: "#DDD" }}>on {this.state.networkName}</a>
                   </li>
                   <li>
                     <Switch>
@@ -616,14 +616,14 @@ class App extends Component {
                   </div>
 
                   {
-                  !this.state.tronWebState.loggedIn ?
-                  <div>
-                    <h3>請在電腦上用 <a target="_blank" rel="noopener noreferrer"  href="https://www.google.com/chrome/">Chrome</a> 開啟網頁</h3>
-                    <h3>並安裝與解鎖 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
-                  </div>
-                  :
-                  <div className="row">
-                    {/* <nav id="filter" className="col-md-12 text-center">
+                    !this.state.tronWebState.loggedIn ?
+                      <div>
+                        <h3>请在电脑上用 <a target="_blank" rel="noopener noreferrer" href="https://www.google.com/chrome/">Chrome</a> 开启网页</h3>
+                        <h3>并安装与解锁 <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
+                      </div>
+                      :
+                      <div className="row">
+                        {/* <nav id="filter" className="col-md-12 text-center">
                       <ul>
                         <li><a className="current btn-theme btn-small" data-filter="*">All</a></li>
                         <li><a className="btn-theme btn-small" data-filter=".normal">Normal</a></li>
@@ -634,14 +634,14 @@ class App extends Component {
                       </ul>
                     </nav> */}
 
-                    {
-                      this.state.myCards.length === 0 ?
-                      <h3>你還沒有卡片，快<Link to="/">回到首頁</Link>抽一張吧！</h3>
-                      :
-                      <Cards cards={this.state.myCards} reversed={true}></Cards>
-                    }
+                        {
+                          this.state.myCards.length === 0 ?
+                            <h3>你还没有卡片，快<Link to="/">回到首页</Link>抽一张吧！</h3>
+                            :
+                            <Cards cards={this.state.myCards} reversed={true}></Cards>
+                        }
 
-                  </div>
+                      </div>
                   }
 
                 </div>
@@ -657,9 +657,9 @@ class App extends Component {
                 <div className="container">
                   <div className="align-center pad-top150 pad-bot150">
                     <img className="align-left cryptobeauty-logo-img"
-                      style={{width: "400px", left: "40px", top: "45px", position: "absolute"}} src="img/logo/cryptobeautylogo01.png" alt="" />
-                    <h1 className="align-left text-white-outlined pad-top20">Crypto Beauty <span className="cryptobeauty-title">密碼女孩</span></h1>
-                    <h3 className="align-left text-white-outlined"><b>你專屬的區塊鏈少女卡片創作交易平台</b></h3>
+                      style={{ width: "400px", left: "40px", top: "45px", position: "absolute" }} src="img/logo/cryptobeautylogo01.png" alt="" />
+                    <h1 className="align-left text-white-outlined pad-top20">Crypto Beauty <span className="cryptobeauty-title">密码女孩</span></h1>
+                    <h3 className="align-left text-white-outlined"><b>你专属的区块链少女卡片创作交易平台</b></h3>
                   </div>
                 </div>
               </section>
@@ -667,98 +667,98 @@ class App extends Component {
               <section id="section-services" className="section pad-bot20 bg-white">
                 <div className="container">
 
-                  <h2 className="align-center color-swimsuitblue pad-bot20">你的女孩，一鍵擁有</h2>
+                  <h2 className="align-center color-swimsuitblue pad-bot20">你的女孩，一键拥有</h2>
 
                   {
-                  !this.state.tronWebState.loggedIn ?
-                  // <div>
-                  //   <h3>您與密碼女孩的距離</h3>
-                  //   <h3>只剩下一個已解鎖的 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
-                  // </div>
-                  <div>
-                    <h3>請在電腦上用 <a target="_blank" rel="noopener noreferrer"  href="https://www.google.com/chrome/">Chrome</a> 開啟網頁</h3>
-                    <h3>並安裝與解鎖 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
-                  </div>
-                  :
-                  <div className="row mar-bot40">
-
-                    <div className="col-lg-4">
-                      <div className="align-center">
-                        {
-                        canFreeDrawNow ?
-                        <div className="button-container button-slide-horizontal">
-                          <div className="slider slider-horizontal">
-                            <div className="button" onClick={this.freeDrawCard}>
-                              <i className="color-white">每日免費抽</i>
-                            </div>
-                          </div>
-                        </div>
-                        :
-                        <div className="button-container">
-                          <div className="">
-                            <div className="button button-muted">
-                              <i className="color-white">每日免費抽</i>
-                            </div>
-                          </div>
-                        </div>
-                        }
-
-
-                        <h4 className="color-2blue">
-                          <FreeDrawCountdown endTime={ canFreeDrawTime }></FreeDrawCountdown>
-                        </h4>
+                    !this.state.tronWebState.loggedIn ?
+                      // <div>
+                      //   <h3>您與密碼女孩的距離</h3>
+                      //   <h3>只剩下一個已解鎖的 <a target="_blank" rel="noopener noreferrer"  href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
+                      // </div>
+                      <div>
+                        <h3>请在电脑上用 <a target="_blank" rel="noopener noreferrer" href="https://www.google.com/chrome/">Chrome</a> 开启网页</h3>
+                        <h3>并安装与解锁 <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
                       </div>
-                    </div>
+                      :
+                      <div className="row mar-bot40">
+
+                        <div className="col-lg-4">
+                          <div className="align-center">
+                            {
+                              canFreeDrawNow ?
+                                <div className="button-container button-slide-horizontal">
+                                  <div className="slider slider-horizontal">
+                                    <div className="button" onClick={this.freeDrawCard}>
+                                      <i className="color-white">每日免费抽</i>
+                                    </div>
+                                  </div>
+                                </div>
+                                :
+                                <div className="button-container">
+                                  <div className="">
+                                    <div className="button button-muted">
+                                      <i className="color-white">每日免费抽</i>
+                                    </div>
+                                  </div>
+                                </div>
+                            }
 
 
-                    <div className="col-lg-4">
-                      <div className="align-center">
-                        <div className="button-container button-slide-horizontal">
-                          <div className="slider slider-horizontal">
-                              <div className="button" onClick={this.drawCard}>
-                                <i className="color-white">單張抽卡</i>
+                            <h4 className="color-2blue">
+                              <FreeDrawCountdown endTime={canFreeDrawTime}></FreeDrawCountdown>
+                            </h4>
+                          </div>
+                        </div>
+
+
+                        <div className="col-lg-4">
+                          <div className="align-center">
+                            <div className="button-container button-slide-horizontal">
+                              <div className="slider slider-horizontal">
+                                <div className="button" onClick={this.drawCard}>
+                                  <i className="color-white">单张抽卡</i>
+                                </div>
                               </div>
                             </div>
-                        </div>
-                        <h4 className="color-2blue">{this.state.drawCardPrice / 1000000} TRX</h4>
-                      </div>
-                    </div>
-
-                    <div className="col-lg-4">
-                      <div className="align-center">
-                        <div className="button-container button-slide-horizontal">
-                          <div className="slider slider-horizontal">
-                            <div className="button" onClick={this.draw10Cards}>
-                              <i className="color-white">超值卡包</i>
-                            </div>
+                            <h4 className="color-2blue">{this.state.drawCardPrice / 1000000} TRX</h4>
                           </div>
                         </div>
-                        <h4 className="color-2blue">{this.state.drawCardPrice / 1000000 * 10} TRX</h4>
-                      </div>
-                    </div>
 
-                  </div>
+                        <div className="col-lg-4">
+                          <div className="align-center">
+                            <div className="button-container button-slide-horizontal">
+                              <div className="slider slider-horizontal">
+                                <div className="button" onClick={this.draw10Cards}>
+                                  <i className="color-white">超值卡包</i>
+                                </div>
+                              </div>
+                            </div>
+                            <h4 className="color-2blue">{this.state.drawCardPrice / 1000000 * 10} TRX</h4>
+                          </div>
+                        </div>
+
+                      </div>
                   }
 
                   {/* state of drawing */}
                   {
-                  this.state.isDrawingCard ?
-                  <div>
-                    <div className="spinner"></div>
-                    {
-                      this.state.isDrawingCardSent &&
-                      <h3 className="">抽卡中，若卡片久未出現，請手動<Link to="/asset">跳轉至 My Girls 查看</Link></h3>
-                    }
-                  </div>
-                  :(
-                  this.state.isDrawingCardFailed ?
-                  <div>
-                    <h3>抽卡失敗</h3>
-                    <h4>請確定 TronLink 連接到主網上，並且擁有足夠的 TRX</h4>
-                  </div>
-                  :
-                  <Cards cards={this.state.justDrawnCards} reversed={true}></Cards>
-                  )}
+                    this.state.isDrawingCard ?
+                      <div>
+                        <div className="spinner"></div>
+                        {
+                          this.state.isDrawingCardSent &&
+                          <h3 className="">抽卡中，若卡片久未出现，请手动<Link to="/asset">跳转至 My Girls 查看</Link></h3>
+                        }
+                      </div>
+                      : (
+                        this.state.isDrawingCardFailed ?
+                          <div>
+                            <h3>抽卡失败</h3>
+                            <h4>请确定 TronLink 连接到主网上，并且拥有足够的 TRX</h4>
+                          </div>
+                          :
+                          <Cards cards={this.state.justDrawnCards} reversed={true}></Cards>
+                      )}
 
                 </div>
               </section>
@@ -770,9 +770,9 @@ class App extends Component {
                       <div className="align-center">
                         <div className="testimonial pad-top40 pad-bot40">
                           <h1 className="text-white-outlined">
-                            取得網紅私密線下活動的專屬門票
+                            取得网红私密线下活动的专属门票
                           </h1>
-                          <br/>
+                          <br />
                         </div>
 
                       </div>
@@ -788,8 +788,8 @@ class App extends Component {
                   <div className="row mar-bot40">
                     <div className="col-md-offset-3 col-md-6">
                       <div className="section-header">
-                        <h2 className="section-heading animated" data-animation="bounceInUp">區塊鏈 X 模特</h2>
-                        <p>清純制服 / 限量版型 / 區塊鏈 / 數位加密 / 私有資產 </p>
+                        <h2 className="section-heading animated" data-animation="bounceInUp">区块链 X 模特</h2>
+                        <p>清纯制服 / 限量版型 / 区块链 / 数位加密 / 私有资产 </p>
                       </div>
                     </div>
                   </div>
