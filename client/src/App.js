@@ -678,6 +678,7 @@ class App extends Component {
                       <div>
                         <h3>请在电脑上用 <a target="_blank" rel="noopener noreferrer" href="https://www.google.com/chrome/">Chrome</a> 开启网页</h3>
                         <h3>并安装与解锁 <a target="_blank" rel="noopener noreferrer" href="https://chrome.google.com/webstore/detail/tronlink/ibnejdfjmmkpcnlpebklmnkoeoihofec">TronLink</a></h3>
+                        <h4 className="align-center color-swimsuitblue pad-top20"><b>若网页无法自动跳转，请点击此 <a target="_blank" rel="noopener noreferrer" href="https://tronbeauty.github.io/CryptoBeauty/#/">连结</a> 加速</b></h4>
                       </div>
                       :
                       <div className="row mar-bot40">

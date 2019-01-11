@@ -37,6 +37,6 @@ npm start
 ### To build and publish
 ```
 cd client
-npn run build
+npm run build
 gh-pages -d build
 ```
