@@ -872,9 +872,11 @@ class App extends Component {
                         <figure><img className="pad-bot20 pad-top20" src="img/logo/qmark.png"></img></figure>
                         <div className="button-container button-slide-horizontal">
                           <div className="slider slider-horizontal">
-                            <div className="button" onClick={this.drawCard}>
-                              <i className="color-white">点我申请</i>
-                            </div>
+                            <a href="#">
+                              <div className="button">
+                                <i className="color-white">点我申请</i>
+                              </div>
+                            </a>
                           </div>
                         </div>
                         <p > 女孩 / 摄影师</p>
@@ -920,7 +922,7 @@ class App extends Component {
           {/* <a href="#header" className="scrollup"><i className="fa fa-chevron-up"></i></a> */}
 
         </div>
-      </ParallaxProvider>
+      </ParallaxProvider >
     );
   }
 
