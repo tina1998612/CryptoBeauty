@@ -833,32 +833,33 @@ class App extends Component {
                       </div>
                     </div>
                   </div>
-                  
-                  <div className="row mar-bot40">
+
+                  <div className="row mar-bot40 bg-grey pad-bot40 pad-top40 div-round">
                     <div className="section-header">
-                      <h2 className="section-heading animated" data-animation="bounceInUp">马上获得女孩</h2>
-                      <div className="col-md-3">
-                        <figure className="card-photo"><img src="img/cards/URcard.png"  alt="" /></figure>
+                      <h2 className="section-heading animated" data-animation="bounceInUp">捕获珍稀女孩</h2>
+                      <div className="col-md-6">
+                        <figure className="card-photo"><img src="img/cards/URcard.png" alt="" /></figure>
                       </div>
-                      <div className="col-md-9">
-                      <br/>
-                      <br/>
-                      <br/>
-                      <br/>
-                      <h3>每日免费抽卡</h3>
-                      <br/>
-                      <br/>
-                      <br/>
-                      <br/>
-                      <h3>十抽超值卡包，節省手續費</h3>
+                      <div className="col-md-6 align-left color-near-black">
+                        <br />
+                        <br />
+                        <br />
+                        <h3 className="color-near-black">❤ 免费抽卡即刻拥有<span className="color-swimsuitblue">高清原图</span></h3>
+                        <br />
+                        <br />
+                        <h3 className="mar-left60 color-near-black">❤ 卡牌即女孩<span className="color-swimsuitblue">私人见面会</span>门票</h3>
+                        <br />
+                        <br />
+                        <h3 className="mar-left120 color-near-black">❤ 稀有卡可兑女孩<span className="color-swimsuitblue">专属悄悄话</span></h3>
                       </div>
+
                     </div>
                   </div>
 
-                  <div className="row align-center mar-bot40">
+                  <div className="row align-center mar-bot40 pad-top40">
                     <div className="section-header">
-                      <h2 className="section-heading animated" data-animation="bounceInUp">抽到更稀有的女孩</h2>
-                        <figure className="card-photo-small"><img src="img/cards/cards_level.png"  alt="" /></figure>
+                      <h2 className="section-heading animated pad-bot40" data-animation="bounceInUp">成为套卡搜藏专家！</h2>
+                      <figure className="card-photo-small"><img src="img/cards/cards_level.png" alt="" /></figure>
                     </div>
                   </div>
 

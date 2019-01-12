@@ -276,6 +276,10 @@ a:hover {
 	color: #000;
 }
 
+.color-near-black {
+	color: #444;
+}
+
 .color-swimsuitblue {
   color: #44BCDD;
 }
@@ -395,6 +399,9 @@ a:hover {
 .mar-left20 { margin-left: 20px; }
 .mar-left25 { margin-left: 25px; }
 .mar-left30 { margin-left: 30px; }
+.mar-left60 { margin-left: 60px; }
+.mar-left120 { margin-left: 120px; }
+.mar-left600 { margin-left: 600px; }
 
 .mar-right5 { margin-right: 5px; }
 .mar-right10 { margin-right: 10px; }
@@ -480,6 +487,10 @@ section.section {
 	background-color: #fff;
 }
 
+.bg-grey {
+	background-color: rgb(236, 236, 236);
+}
+
 /* --- section heading --- */
 .section-header {
 	text-align: center;
@@ -487,6 +498,10 @@ section.section {
 .section-header h2.section-heading {
 	text-transform: uppercase;
 	font-weight: 700;
+}
+
+.div-round {
+  border-radius: 7px;
 }
 
 /* ==========================
@@ -782,7 +797,7 @@ About
   height: 250px;
 }
 
-.card-photo-high img {	
+.card-photo-high img {
   height: 400px;
 }
 
