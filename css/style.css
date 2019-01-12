@@ -1,6 +1,5 @@
 /* Additionals */
 
-
 /* Button Slider */
 
 .button-container {
@@ -277,6 +276,10 @@ a:hover {
 	color: #000;
 }
 
+.color-near-black {
+	color: #444;
+}
+
 .color-swimsuitblue {
   color: #44BCDD;
 }
@@ -346,6 +349,9 @@ a:hover {
 .pad-top40 {
 	padding-top: 40px;
 }
+.pad-top60 {
+	padding-top: 60px;
+}
 .pad-top100 {
 	padding-top: 100px;
 }
@@ -382,11 +388,18 @@ a:hover {
 .pad-bot40 {
 	padding-bottom: 40px;
 }
+.pad-bot60 {
+	padding-bottom: 60px;
+}
 .pad-bot100 {
 	padding-bottom: 100px;
 }
 .pad-bot150 {
 	padding-bottom: 150px;
+}
+
+.pad-lef50 {
+	padding-left: 50px;
 }
 
 /* ---- margin --- */
@@ -396,6 +409,10 @@ a:hover {
 .mar-left20 { margin-left: 20px; }
 .mar-left25 { margin-left: 25px; }
 .mar-left30 { margin-left: 30px; }
+.mar-left45 { margin-left: 45px; }
+.mar-left60 { margin-left: 60px; }
+.mar-left120 { margin-left: 120px; }
+.mar-left600 { margin-left: 600px; }
 
 .mar-right5 { margin-right: 5px; }
 .mar-right10 { margin-right: 10px; }
@@ -466,7 +483,9 @@ a:hover {
 .mar-bot40 {
 	margin-bottom: 40px;
 }
-
+.mar-bot70 {
+	margin-bottom: 70px;
+}
 
 /*===========================
   --- Sections ----
@@ -474,11 +493,15 @@ a:hover {
 
 section.section {
 	margin:0;
-	padding: 80px 0 60px 0;
+	padding: 40px 0 20px 0;
 }
 
 .bg-white {
 	background-color: #fff;
+}
+
+.bg-grey {
+	background-color: rgb(236, 236, 236);
 }
 
 /* --- section heading --- */
@@ -488,6 +511,10 @@ section.section {
 .section-header h2.section-heading {
 	text-transform: uppercase;
 	font-weight: 700;
+}
+
+.div-round {
+  border-radius: 7px;
 }
 
 /* ==========================
@@ -759,6 +786,10 @@ section.featured.inner {
 About
 =========================== */
 
+.cards {
+  width: 320px;
+}
+
 .member-photo {
 	box-sizing:border-box;
 	-webkit-border-radius:50%;
@@ -769,7 +800,18 @@ About
 .member-photo img {
 	-webkit-border-radius:50%;
 		-moz-border-radius:50%;
-			border-radius:50%;
+      border-radius:50%;
+}
+
+.card-photo img {
+  height: 350px;
+}
+.card-photo-small img {
+  height: 250px;
+}
+
+.card-photo-high img {
+  height: 400px;
 }
 
 .team-detail h4 {
@@ -1111,6 +1153,15 @@ a.scrollup:hover{
 .social-network a.icoFacebook:hover {
 	background-color:#3B5998;
 }
+.social-network a.icoGithub:hover {
+	background-color:rgb(63, 63, 63);
+}
+.social-network a.icoTron:hover {
+	background-color:rgb(255, 189, 46);
+}
+.social-network a.icoYoutube:hover {
+	background-color:rgb(218, 53, 16);
+}
 .social-network a.icoTwitter:hover {
 	background-color:#33ccff;
 }
@@ -1123,8 +1174,8 @@ a.scrollup:hover{
 .social-network a.icoLinkedin:hover {
 	background-color:#007bb7;
 }
-.social-network a.icoRss:hover i, .social-network a.icoFacebook:hover i, .social-network a.icoTwitter:hover i,
-.social-network a.icoGoogle:hover i, .social-network a.icoVimeo:hover i, .social-network a.icoLinkedin:hover i {
+.social-network a.icoRss:hover i, .social-network a.icoFacebook:hover i, .social-network a.icoTwitter:hover i, .social-network a.icoTron:hover i,
+.social-network a.icoGoogle:hover i, .social-network a.icoVimeo:hover i, .social-network a.icoLinkedin:hover i, .social-network a.icoGithub:hover i, .social-network a.icoYoutube:hover i {
 	color:#fff;
 }
 a.socialIcon:hover, .socialHoverClass {
