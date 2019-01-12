@@ -1159,6 +1159,9 @@ a.scrollup:hover{
 .social-network a.icoTron:hover {
 	background-color:rgb(255, 189, 46);
 }
+.social-network a.icoYoutube:hover {
+	background-color:rgb(218, 53, 16);
+}
 .social-network a.icoTwitter:hover {
 	background-color:#33ccff;
 }
@@ -1172,7 +1175,7 @@ a.scrollup:hover{
 	background-color:#007bb7;
 }
 .social-network a.icoRss:hover i, .social-network a.icoFacebook:hover i, .social-network a.icoTwitter:hover i, .social-network a.icoTron:hover i,
-.social-network a.icoGoogle:hover i, .social-network a.icoVimeo:hover i, .social-network a.icoLinkedin:hover i, .social-network a.icoGithub:hover i {
+.social-network a.icoGoogle:hover i, .social-network a.icoVimeo:hover i, .social-network a.icoLinkedin:hover i, .social-network a.icoGithub:hover i, .social-network a.icoYoutube:hover i {
 	color:#fff;
 }
 a.socialIcon:hover, .socialHoverClass {

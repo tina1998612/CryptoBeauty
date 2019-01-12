@@ -901,7 +901,7 @@ class App extends Component {
                     <li><a href="https://www.facebook.com/CryptoBeauty.Art" className="icoFacebook" title="Facebook"><i className="fa fa-facebook"></i></a></li>
                     <li><a href="https://github.com/TronBeauty/CryptoBeauty" className="icoGithub" title="Github"><i className="fa fa-github"></i></a></li>
                     <li><a href="https://tronscan.org/#/contract/TXh5o25svsvgmxqDG35gU1Xcq5BcmwmcqS" className="icoTron" title="Tron"><i className="fa fa-bitcoin"></i></a></li>
-
+                    <li><a href="https://www.youtube.com/watch?v=0EHjpbdWvhc" className="icoYoutube" title="Youtube"><i className="fa fa-youtube"></i></a></li>
                     {/*<li><a href="#" className="icoTwitter" title="Twitter"><i className="fa fa-twitter"></i></a></li>*/}
                     {/*<li><a href="#" className="icoGoogle" title="Google +"><i className="fa fa-google-plus"></i></a></li>*/}
                     {/*<li><a href="#" className="icoLinkedin" title="Linkedin"><i className="fa fa-linkedin"></i></a></li>*/}
