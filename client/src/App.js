@@ -833,6 +833,34 @@ class App extends Component {
                       </div>
                     </div>
                   </div>
+                  
+                  <div className="row mar-bot40">
+                    <div className="section-header">
+                      <h2 className="section-heading animated" data-animation="bounceInUp">马上获得女孩</h2>
+                      <div className="col-md-3">
+                        <figure className="card-photo"><img src="img/cards/URcard.png"  alt="" /></figure>
+                      </div>
+                      <div className="col-md-9">
+                      <br/>
+                      <br/>
+                      <br/>
+                      <br/>
+                      <h3>每日免费抽卡</h3>
+                      <br/>
+                      <br/>
+                      <br/>
+                      <br/>
+                      <h3>十抽超值卡包，節省手續費</h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="row align-center mar-bot40">
+                    <div className="section-header">
+                      <h2 className="section-heading animated" data-animation="bounceInUp">抽到更稀有的女孩</h2>
+                        <figure className="card-photo-small"><img src="img/cards/cards_level.png"  alt="" /></figure>
+                    </div>
+                  </div>
 
                 </div>
               </section>

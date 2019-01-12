@@ -1,6 +1,5 @@
 /* Additionals */
 
-
 /* Button Slider */
 
 .button-container {
@@ -759,6 +758,10 @@ section.featured.inner {
 About
 =========================== */
 
+.cards {
+  width: 320px;
+}
+
 .member-photo {
 	box-sizing:border-box;
 	-webkit-border-radius:50%;
@@ -769,7 +772,18 @@ About
 .member-photo img {
 	-webkit-border-radius:50%;
 		-moz-border-radius:50%;
-			border-radius:50%;
+      border-radius:50%;
+}
+
+.card-photo img {
+  height: 350px;
+}
+.card-photo-small img {
+  height: 250px;
+}
+
+.card-photo-high img {	
+  height: 400px;
 }
 
 .team-detail h4 {
