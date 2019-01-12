@@ -801,7 +801,7 @@ class App extends Component {
                         <figure className="member-photo"><img src="img/team/member5.jpg" alt="" /></figure>
                         <div className="team-detail">
                           <h4>婷婷</h4>
-                          <span>IG:tinaaalee</span>
+                          <a href="https://www.instagram.com/tinaaaaalee/">IG:tinaaaaalee</a>
                         </div>
                       </div>
                     </div>
@@ -810,7 +810,7 @@ class App extends Component {
                         <figure className="member-photo"><img src="img/team/member6.jpg" alt="" /></figure>
                         <div className="team-detail">
                           <h4>思嫺</h4>
-                          {/* <span>IG:xxx</span> */}
+                          <a href="https://www.instagram.com/sixian0909/">IG:sixian0909</a>
                         </div>
                       </div>
                     </div>
@@ -819,7 +819,7 @@ class App extends Component {
                         <figure className="member-photo"><img src="img/team/member7.jpg" alt="" /></figure>
                         <div className="team-detail">
                           <h4>小敬</h4>
-                          {/* <span>IG:xxx</span> */}
+                          <a href="https://www.facebook.com/profile.php?id=100001603870154">FB:小敬</a>
                         </div>
                       </div>
                     </div>
@@ -828,7 +828,7 @@ class App extends Component {
                         <figure className="member-photo"><img src="img/team/member8.jpg" alt="" /></figure>
                         <div className="team-detail">
                           <h4>妤珊</h4>
-                          {/* <span>IG:xxx</span> */}
+                          <a href="https://www.instagram.com/nnszea/">IG:nnszea</a>
                         </div>
                       </div>
                     </div>
@@ -856,12 +856,33 @@ class App extends Component {
                     </div>
                   </div>
 
-                  <div className="row align-center mar-bot40 pad-top40">
+                  <div className="row align-center mar-bot70 pad-top40">
                     <div className="section-header">
                       <h2 className="section-heading animated pad-bot40" data-animation="bounceInUp">成为套卡搜藏专家！</h2>
                       <figure className="card-photo-small"><img src="img/cards/cards_level.png" alt="" /></figure>
                     </div>
                   </div>
+
+                  <div className="col-lg-4"></div>
+
+                  <div className="col-lg-3 bg-grey mar-left45  mar-bot30 div-round">
+                    <div className="row align-center mar-bot40 pad-top40">
+                      <div className="section-header">
+                        <h2 className="section-heading animated " data-animation="bounceInUp">成为卡牌</h2>
+                        <figure><img className="pad-bot20 pad-top20" src="img/logo/qmark.png"></img></figure>
+                        <div className="button-container button-slide-horizontal">
+                          <div className="slider slider-horizontal">
+                            <div className="button" onClick={this.drawCard}>
+                              <i className="color-white">点我申请</i>
+                            </div>
+                          </div>
+                        </div>
+                        <p > 女孩 / 摄影师</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-lg-3"></div>
 
                 </div>
               </section>
@@ -873,17 +894,20 @@ class App extends Component {
 
           <section id="footer" className="section footer">
             <div className="container">
-              {/* <div className="row animated opacity mar-bot20" data-andown="fadeIn" data-animation="animation">
+              <div className="row animated opacity mar-bot20" data-andown="fadeIn" data-animation="animation">
                 <div className="col-sm-12 align-center">
                   <ul className="social-network social-circle">
-                    <li><a href="#" className="icoRss" title="Rss"><i className="fa fa-rss"></i></a></li>
-                    <li><a href="#" className="icoFacebook" title="Facebook"><i className="fa fa-facebook"></i></a></li>
-                    <li><a href="#" className="icoTwitter" title="Twitter"><i className="fa fa-twitter"></i></a></li>
-                    <li><a href="#" className="icoGoogle" title="Google +"><i className="fa fa-google-plus"></i></a></li>
-                    <li><a href="#" className="icoLinkedin" title="Linkedin"><i className="fa fa-linkedin"></i></a></li>
+                    {/*<li><a href="#" className="icoRss" title="Rss"><i className="fa fa-rss"></i></a></li>*/}
+                    <li><a href="https://www.facebook.com/CryptoBeauty.Art" className="icoFacebook" title="Facebook"><i className="fa fa-facebook"></i></a></li>
+                    <li><a href="https://github.com/TronBeauty/CryptoBeauty" className="icoGithub" title="Github"><i className="fa fa-github"></i></a></li>
+                    <li><a href="https://tronscan.org/#/contract/TXh5o25svsvgmxqDG35gU1Xcq5BcmwmcqS" className="icoTron" title="Tron"><i className="fa fa-bitcoin"></i></a></li>
+
+                    {/*<li><a href="#" className="icoTwitter" title="Twitter"><i className="fa fa-twitter"></i></a></li>*/}
+                    {/*<li><a href="#" className="icoGoogle" title="Google +"><i className="fa fa-google-plus"></i></a></li>*/}
+                    {/*<li><a href="#" className="icoLinkedin" title="Linkedin"><i className="fa fa-linkedin"></i></a></li>*/}
                   </ul>
                 </div>
-              </div> */}
+              </div>
 
               <div className="row align-center copyright">
                 <div className="col-sm-12">
