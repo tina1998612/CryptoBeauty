@@ -872,7 +872,7 @@ class App extends Component {
                         <figure><img className="pad-bot20 pad-top20" src="img/logo/qmark.png"></img></figure>
                         <div className="button-container button-slide-horizontal">
                           <div className="slider slider-horizontal">
-                            <a href="#">
+                            <a href="https://cryptobeautyart.typeform.com/to/DDxyFG">
                               <div className="button">
                                 <i className="color-white">点我申请</i>
                               </div>
