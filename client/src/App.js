@@ -610,7 +610,7 @@ class App extends Component {
                   <div className="row mar-bot40">
                     <div className="col-md-offset-3 col-md-6">
                       <div className="section-header">
-                        <h2 className="section-heading animated" data-animation="bounceInUp">Girls in the house</h2>
+                        <h2 className="section-heading animated pad-top40" data-animation="bounceInUp">Girls in the house</h2>
                       </div>
                     </div>
                   </div>
