@@ -607,24 +607,23 @@ class App extends Component {
           </div>
 
           <Switch>
-            <Route exact path="/trade"><div>
+            <Route exact path="/trade">
+              <div>
+              <section id="section-works" className="section appear clearfix">
+                <div className="container">
 
-            <section id="section-works" className="section appear clearfix">
-              <div className="container">
-
-                <div className="row mar-bot40">
-                  <div className="col-md-offset-3 col-md-6">
-                    <div className="section-header">
-                      <h2 className="section-heading animated pad-top40" data-animation="bounceInUp">The Market of Cards</h2>
+                  <div className="row mar-bot40">
+                    <div className="col-md-offset-3 col-md-6">
+                      <div className="section-header">
+                        <h2 className="section-heading animated pad-top40" data-animation="bounceInUp">The Market of Cards</h2>
+                      </div>
                     </div>
                   </div>
+
                 </div>
-
+              </section>
               </div>
-            </section>
-
-
-            </div></Route>
+            </Route>
 
             <Route exact path="/asset"><div>
 
