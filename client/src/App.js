@@ -313,7 +313,7 @@ class App extends Component {
     // });
 
     contract.freeDrawCard(0).send({
-      feeLimit: undefined,
+      feeLimit: 100000000,
       callValue: 0,
       shouldPollResponse: false // resolve when tx broadcasted
     })
@@ -362,7 +362,7 @@ class App extends Component {
 
 
     contract.drawCard(0).send({
-      feeLimit: undefined,
+      feeLimit: 100000000,
       callValue: drawCardPrice,
       shouldPollResponse: false // resolve when tx broadcasted
     })
@@ -408,7 +408,7 @@ class App extends Component {
     // });
 
     contract.drawMultipleCards(0, cardCount).send({
-      feeLimit: undefined,
+      feeLimit: 100000000,
       callValue: drawCardPrice * cardCount,
       shouldPollResponse: false // resolve when tx broadcasted
     })
