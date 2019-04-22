@@ -32,6 +32,7 @@ More instructions are in the README under `client` directory.
 
 ```
 cd client
+npm install
 npm start
 ```
 ### To build and publish
