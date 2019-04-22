@@ -35,9 +35,11 @@ cd client
 npm install
 npm start
 ```
+
 ### To build and publish
+(`npm install gh-pages -g` if haven't installed github pages)
 ```
 cd client
 npm run build
-gh-pages -d build
+gh-pages -d build 
 ```
