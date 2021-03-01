@@ -1,6 +1,6 @@
 # CryptoBeauty 密碼女孩
 
-#### 你專屬的區塊鏈少女卡片創作交易平台 🦋 http://cryptobeauty.art/ <br>
+#### 你專屬的區塊鏈少女卡片創作交易平台 🦋 https://tina1998612.github.io/CryptoBeauty/#/ <br>
 
 #### A wonderland for you to explore and create the beauty of crypto girls on blockchain;) <br>
 
